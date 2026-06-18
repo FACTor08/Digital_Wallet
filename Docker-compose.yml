@@ -1,0 +1,27 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: digital-wallet-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_db_password_here
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  spring-app:
+    build: .
+    container_name: digital-wallet-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=your_db_password_here
+
+volumes:
+  pgdata:
