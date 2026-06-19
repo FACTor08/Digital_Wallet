@@ -38,7 +38,7 @@ private String phone;
     private long nin;
     private long bvn;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
 @NotNull(message = "Input a valid address")
     private String address;
