@@ -10,6 +10,7 @@ import com.FACTor.Digital_Wallet.repository.WalletRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class LoginLogic {
     private final WalletRepo walletRepo;
     private final PasswordEncoder encode;
 
+    @Transactional
     public Customer login(LoginRequest request){
 
         //searches for user's username in the db
