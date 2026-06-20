@@ -43,6 +43,10 @@ if (checkEmail.isPresent() || checkBvn.isPresent() ||checkNin.isPresent()){
        Customer customer = mapper.userTransfr(data, image, imageType);
 
        repo.save(customer); //save user data to the db
+       if(data.getUsername().isEmpty()){
        return "Hey " + data.getFirstname() + " your new Wallet is almost ready🤗, Thank you for choosing us❤" ;
+       }else{
+           return "Hey " + data.getUsername() + " your new Wallet is almost ready🤗, Thank you for choosing us❤" ;
        }
    }
+}
