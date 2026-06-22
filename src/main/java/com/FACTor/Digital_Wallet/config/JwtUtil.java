@@ -24,7 +24,7 @@ private SecretKey getSigningKey() {
      return Jwts.builder()
              .subject(username.getUsername())
              .issuedAt(new Date())
-             .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 2))
+             .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
              .signWith(getSigningKey())
              .compact();
  }
