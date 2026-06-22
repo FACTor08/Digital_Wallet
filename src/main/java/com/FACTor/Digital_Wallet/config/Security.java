@@ -30,9 +30,6 @@ public class Security {
                         .requestMatchers("/user-signup",
                                 "/new-wallet",
                                 "/login",
-                                "/deposit",
-                                "/transfer",
-                                // --- Swagger UI & API Docs ---
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
