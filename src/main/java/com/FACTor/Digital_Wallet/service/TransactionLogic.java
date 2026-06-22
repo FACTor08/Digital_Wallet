@@ -1,6 +1,7 @@
 package com.FACTor.Digital_Wallet.service;
 
 
+import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.entity.Transaction;
 import com.FACTor.Digital_Wallet.entity.Wallet;
 import com.FACTor.Digital_Wallet.exceptions.ResourceNotFoundException;
@@ -8,6 +9,7 @@ import com.FACTor.Digital_Wallet.repository.CustomerRepo;
 import com.FACTor.Digital_Wallet.repository.TransactionRepo;
 import com.FACTor.Digital_Wallet.repository.WalletRepo;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,8 @@ public String deposit(long accountNumber, BigDecimal amount){
 
    //deposit
     Wallet balance = wallet.get();
-    balance.setBalance(balance.getBalance().add(amount));
+    BigDecimal expectedDeposit = depositByTierStatus(amount, balance);
+    balance.setBalance(expectedDeposit);
     walletRepo.save(balance);
 
     Transaction receipt = new Transaction();
@@ -49,9 +52,24 @@ public String deposit(long accountNumber, BigDecimal amount){
     return "CREDIT ALERT: You have been credited with $" + amount + "\n " +
                 "Your new balance is $" + balance.getBalance();
 }
-public String transfer(long senderAccount, long receiverAccount, BigDecimal amount){
 
-    //seacrhes for both sender and receiver account numbers in the db or throws 404 if not found
+    @NotNull
+    private static BigDecimal depositByTierStatus(BigDecimal amount, Wallet balance) {
+        Customer customer = balance.getCustomer();
+        BigDecimal expectedDeposit = balance.getBalance().add(amount);
+        String tier = customer.getAccountTier();
+
+        if (tier.equals("Tier 1") && expectedDeposit.compareTo(new BigDecimal(300000))> 0){
+            throw new IllegalArgumentException("Deposit amount exceeds current account tier (max: $300000)");
+        } else if (tier.equals("Tier 2") && expectedDeposit.compareTo(new BigDecimal(750000)) > 0){
+            throw new IllegalArgumentException("Deposit amount exceeds current account tier (max: $750000)");
+        }
+        return expectedDeposit;
+    }
+
+    public String transfer(long senderAccount, long receiverAccount, BigDecimal amount){
+
+    //searches for both sender and receiver account numbers in the db or throws 404 if not found
     Optional<Wallet> send = walletRepo.findByAccountNumber(senderAccount);
     Optional<Wallet> receive = walletRepo.findByAccountNumber(receiverAccount);
     if(send.isEmpty() || receive.isEmpty()){
