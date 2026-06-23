@@ -15,7 +15,7 @@ public class JwtUtil {
 @Value("${JWT_SECRET_KEY}")
 private String secretString;
 
-private SecretKey getSigningKey() {
+private SecretKey secretKey() {
     byte[] keyBytes = Decoders.BASE64.decode(secretString);
     return Keys.hmacShaKeyFor(keyBytes);
 }
@@ -25,12 +25,12 @@ private SecretKey getSigningKey() {
              .subject(username.getUsername())
              .issuedAt(new Date())
              .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
-             .signWith(getSigningKey())
+             .signWith(secretKey())
              .compact();
  }
  public String extractToken(String token) {
      return Jwts.parser()
-             .verifyWith(getSigningKey())
+             .verifyWith(secretKey())
              .build()
              .parseSignedClaims(token)
              .getPayload()
@@ -39,7 +39,7 @@ private SecretKey getSigningKey() {
  public boolean validateToken(String token){
      try {
      Jwts.parser()
-             .verifyWith(getSigningKey())
+             .verifyWith(secretKey())
              .build()
              .parseSignedClaims(token);
      return true;
