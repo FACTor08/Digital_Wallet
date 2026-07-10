@@ -22,7 +22,7 @@ public class CustomerLogic {
     private final CustomerRepo repo;
     private final CustomerMapper mapper;
 
-    public String addUser(CustomerDTO data){
+    public Customer addUser(CustomerDTO data){
         Optional<Customer> checkEmail = repo.findByEmail(data.getEmail());
         Optional<Customer> checkBvn = repo.findByBvn(data.getBvn());
         Optional<Customer> checkNin = repo.findByNin(data.getNin());
@@ -41,15 +41,12 @@ public class CustomerLogic {
         }
 
         Customer customer = mapper.userTransfer(data);
-        repo.save(customer); //save user data to the db
-        if (data.getUsername().isEmpty()) {
-            return "Hey " + data.getFirstname() + " your new Wallet is almost ready🤗, Thank you for choosing us❤";
-        } else {
-            return "Hey " + data.getUsername() + " your new Wallet is almost ready🤗, Thank you for choosing us❤";
+     return repo.save(customer); //save user data to the db
+
         }
-    }
+
     //A method for user to upload profile picture
-    public String addUserImage(String user, MultipartFile file) throws IOException {
+    public Customer addUserImage(String user, MultipartFile file) throws IOException {
         Optional<Customer> username = repo.findByUsername(user);
         Optional<Customer> firstname  = repo.findByFirstname(user);
         if (username.isEmpty() && firstname.isEmpty()) {
@@ -60,7 +57,6 @@ public class CustomerLogic {
         String imageType = file.getContentType();
         update.setImage(image);
         update.setImageType(imageType);
-        repo.save(update);
-        return "Profile picture successfully added";
+       return repo.save(update);
     }
 }

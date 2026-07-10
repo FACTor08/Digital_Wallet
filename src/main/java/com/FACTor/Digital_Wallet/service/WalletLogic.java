@@ -23,7 +23,7 @@ private final WalletRepo repo;
 private final CustomerRepo customerRepo;
 private final WalletMapper set;
 
-    public String newWallet(String email, WalletDTO pass) {
+    public Wallet newWallet(String email, WalletDTO pass) {
         //searches for user email in the db
         Optional<Customer> user = customerRepo.findByEmail(email);
         if (user.isEmpty()){
@@ -41,9 +41,7 @@ private final WalletMapper set;
             //creates new wallet if user meets all conditions
             Wallet wallet = set.transfer(pass);
             wallet.setCustomer(customer);
-repo.save(wallet);  //saves new user data to the db
-            return "Congratulations " + customer.getFirstname() + " Your new account number is " + wallet.getAccountNumber()
-                    + "🎉🎉🎉";
-        }
+    return repo.save(wallet);  //saves new user data to the db
+           }
     }
 }

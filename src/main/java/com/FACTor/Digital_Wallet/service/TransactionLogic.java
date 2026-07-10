@@ -29,7 +29,7 @@ public String generateRef(){
     return "TRX-" + System.currentTimeMillis(); //generates transaction reference code
     }
     //searches for user account number in the db and throws "404 not found" if not found
-public String deposit(long accountNumber, BigDecimal amount){
+public Transaction deposit(long accountNumber, BigDecimal amount){
    Optional<Wallet> wallet = walletRepo.findByAccountNumber(accountNumber);
    if(wallet.isEmpty()){
        throw new ResourceNotFoundException("Invalid Account Number!");
@@ -47,10 +47,8 @@ public String deposit(long accountNumber, BigDecimal amount){
     receipt.setReference(generateRef());
     receipt.setWallet(balance);
     receipt.setTimestamp(LocalDateTime.now());
-    transactionRepo.save(receipt);
+    return transactionRepo.save(receipt);
 
-    return "CREDIT ALERT: You have been credited with $" + amount + "\n " +
-                "Your new balance is $" + balance.getBalance();
 }
 
     @NotNull
@@ -67,7 +65,7 @@ public String deposit(long accountNumber, BigDecimal amount){
         return expectedDeposit;
     }
 
-    public String transfer(long senderAccount, long receiverAccount, BigDecimal amount){
+    public List<Transaction> transfer(long senderAccount, long receiverAccount, BigDecimal amount){
 
     //searches for both sender and receiver account numbers in the db or throws 404 if not found
     Optional<Wallet> send = walletRepo.findByAccountNumber(senderAccount);
@@ -102,18 +100,7 @@ public String deposit(long accountNumber, BigDecimal amount){
     receiverReceipt.setWallet(receiver);
     receiverReceipt.setTimestamp(LocalDateTime.now());
 
-    transactionRepo.saveAll(List.of(senderReceipt, receiverReceipt));//saves receipts to the db
-
-    String fullName = receiver.getCustomer().getLastname() + " " + receiver.getCustomer().getFirstname();
-//user receipt in json
-    Map<String, Object> body = new LinkedHashMap<>();
-    body.put("Reference: ", senderReceipt.getReference());
-    body.put("Type: ", "DEBIT");
-    body.put("Amount: ", amount);
-    body.put("Receiver: ", fullName);
-    body.put("Time: ", LocalDateTime.now());
-
-    return "TRANSACTION SUCCESSFUL! \n Receipt: \n" + body;
+   return transactionRepo.saveAll(List.of(senderReceipt, receiverReceipt));//saves receipts to the db
 }
 
    }
