@@ -1,6 +1,7 @@
 package com.FACTor.Digital_Wallet.controller;
 
 import com.FACTor.Digital_Wallet.dto.CustomerDTO;
+import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.service.CustomerLogic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -16,16 +17,16 @@ public class CustomerController {
     private final CustomerLogic logic;
 
     @PostMapping("/user-signup")
-    public ResponseEntity<String> addUser(@RequestBody CustomerDTO data) {
-        String msg = logic.addUser(data);
-        return ResponseEntity.ok(msg);
+    public ResponseEntity<Customer> addUser(@RequestBody CustomerDTO data) {
+        Customer register = logic.addUser(data);
+        return ResponseEntity.ok(register);
     }
 
     @PostMapping(value = "/profile-picture-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadProfile(@ModelAttribute String user,
+    public ResponseEntity<Customer> uploadProfile(@ModelAttribute String user,
                                                 @RequestPart(name = "image") MultipartFile image) throws IOException {
 
-        String msg = logic.addUserImage(user, image);
-        return ResponseEntity.ok(msg);
+        Customer data = logic.addUserImage(user, image);
+        return ResponseEntity.ok(data);
     }   
 }
