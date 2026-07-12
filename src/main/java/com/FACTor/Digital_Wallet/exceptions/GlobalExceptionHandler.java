@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Status", "UNAUTHORIZED",
                 "Message", ex.getMessage()));
     }
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> resourceNotFoundException(ResourceNotFoundException ex) {
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> accountNotFoundException(AccountNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Status", "NOT_FOUND",
                 "Message", ex.getMessage()));
     }
