@@ -4,8 +4,7 @@ package com.FACTor.Digital_Wallet.service;
 import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.entity.Transaction;
 import com.FACTor.Digital_Wallet.entity.Wallet;
-import com.FACTor.Digital_Wallet.exceptions.ResourceNotFoundException;
-import com.FACTor.Digital_Wallet.repository.CustomerRepo;
+import com.FACTor.Digital_Wallet.exceptions.AccountNotFoundException;
 import com.FACTor.Digital_Wallet.repository.TransactionRepo;
 import com.FACTor.Digital_Wallet.repository.WalletRepo;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,6 @@ import java.util.*;
 public class TransactionLogic {
     private final WalletRepo walletRepo;
     private final TransactionRepo transactionRepo;
-    private final CustomerRepo customerRepo;
-
 public String generateRef(){
     return "TRX-" + System.currentTimeMillis(); //generates transaction reference code
     }
@@ -32,7 +29,7 @@ public String generateRef(){
 public Transaction deposit(long accountNumber, BigDecimal amount){
    Optional<Wallet> wallet = walletRepo.findByAccountNumber(accountNumber);
    if(wallet.isEmpty()){
-       throw new ResourceNotFoundException("Invalid Account Number!");
+       throw new AccountNotFoundException("Invalid Account Number!");
    }
 
    //deposit
@@ -71,7 +68,7 @@ public Transaction deposit(long accountNumber, BigDecimal amount){
     Optional<Wallet> send = walletRepo.findByAccountNumber(senderAccount);
     Optional<Wallet> receive = walletRepo.findByAccountNumber(receiverAccount);
     if(send.isEmpty() || receive.isEmpty()){
-        throw new ResourceNotFoundException("Invalid Account Number");
+        throw new AccountNotFoundException("Invalid Account Number");
     }
     Wallet sender = send.get();
     Wallet receiver = receive.get();
