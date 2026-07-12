@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 public class WalletController {
 @Autowired
@@ -15,5 +17,10 @@ private WalletLogic logic;
     public ResponseEntity<Wallet> newWallet(@RequestParam String email, @RequestBody WalletDTO pass){
         Wallet data = logic.newWallet(email, pass);
         return ResponseEntity.ok(data);
+    }
+    @GetMapping("/account-details")
+    public ResponseEntity<Optional<Wallet>> accountDetails(@RequestParam long accountNumber){
+       Optional<Wallet> account = logic.accountDetails(accountNumber);
+        return ResponseEntity.ok(account);
     }
 }
