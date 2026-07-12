@@ -4,7 +4,6 @@ import com.FACTor.Digital_Wallet.dto.LoginRequest;
 import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.entity.Wallet;
 import com.FACTor.Digital_Wallet.exceptions.InvalidCredentialsException;
-import com.FACTor.Digital_Wallet.exceptions.ResourceNotFoundException;
 import com.FACTor.Digital_Wallet.repository.CustomerRepo;
 import com.FACTor.Digital_Wallet.repository.WalletRepo;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class LoginLogic {
 
         //searches for existing user wallet
         Wallet wallet = walletRepo.findByCustomer(customer)
-                .orElseThrow(()-> new ResourceNotFoundException("User Wallet not Found"));
+                .orElseThrow(()-> new InvalidCredentialsException("User Wallet not Found"));
 
         //ensures the entered passcode matches the passcode in the db
         if (!encode.matches(request.getPasscode(), wallet.getPasscode())){
