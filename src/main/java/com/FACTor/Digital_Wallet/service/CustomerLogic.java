@@ -36,7 +36,7 @@ public class CustomerLogic {
             throw new IllegalArgumentException("Please Confirm your NIN/BVN/Phone-number is correct!");
         }
         // throws error code 409 If email,bvn or nin already exists or else creates a new account
-        if (checkEmail.isPresent() || checkBvn.isPresent() || checkNin.isPresent()) {
+        if (checkEmail.isPresent() && checkBvn.isPresent() && checkNin.isPresent()) {
             throw new ExistingUserException("User already Exists!");
         }
 
