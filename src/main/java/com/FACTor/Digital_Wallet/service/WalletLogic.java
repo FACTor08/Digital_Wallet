@@ -3,8 +3,9 @@ package com.FACTor.Digital_Wallet.service;
 import com.FACTor.Digital_Wallet.dto.WalletDTO;
 import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.entity.Wallet;
+import com.FACTor.Digital_Wallet.exceptions.AccountNotFoundException;
 import com.FACTor.Digital_Wallet.exceptions.ExistingUserException;
-import com.FACTor.Digital_Wallet.exceptions.ResourceNotFoundException;
+import com.FACTor.Digital_Wallet.exceptions.InvalidCredentialsException;
 import com.FACTor.Digital_Wallet.repository.CustomerRepo;
 import com.FACTor.Digital_Wallet.repository.WalletRepo;
 import com.FACTor.Digital_Wallet.mapper.WalletMapper;
@@ -27,7 +28,7 @@ private final WalletMapper set;
         //searches for user email in the db
         Optional<Customer> user = customerRepo.findByEmail(email);
         if (user.isEmpty()){
-            throw new ResourceNotFoundException("Invalid email!: Please confirm email and input a valid email");
+            throw new InvalidCredentialsException("Invalid email!: Please confirm email and input a valid email");
         }
         //prompts user to ensure passcode entry is certain
         if (!Objects.equals(pass.getPasscode(), pass.getConfirmPasscode())){
@@ -43,5 +44,12 @@ private final WalletMapper set;
             wallet.setCustomer(customer);
     return repo.save(wallet);  //saves new user data to the db
            }
+    }
+    public Optional<Wallet> accountDetails(long accountNumber) {
+    Optional<Wallet> data = repo.findByAccountNumber(accountNumber);
+                if(data.isPresent()) {
+                    return data;
+                }
+       throw new AccountNotFoundException("Invalid account number!");
     }
 }
