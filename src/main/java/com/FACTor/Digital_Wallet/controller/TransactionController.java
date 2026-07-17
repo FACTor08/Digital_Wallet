@@ -21,8 +21,10 @@ private final TransactionLogic logic;
     return ResponseEntity.ok(transaction);
 }
     @PostMapping("/transfer")
-    public ResponseEntity<List<Transaction>> transfer(@RequestParam long senderAccount, @RequestParam long receiverAccount, @RequestParam BigDecimal amount) {
-        List<Transaction> transaction = logic.transfer(senderAccount, receiverAccount, amount);
+    public ResponseEntity<List<Transaction>> transfer(@RequestParam long senderAccount,
+                                                      @RequestParam long receiverAccount,
+                                                      @RequestParam BigDecimal amount, @RequestParam String passcode) {
+        List<Transaction> transaction = logic.transfer(senderAccount, receiverAccount, amount, passcode);
 
         return ResponseEntity.ok(transaction);
     }

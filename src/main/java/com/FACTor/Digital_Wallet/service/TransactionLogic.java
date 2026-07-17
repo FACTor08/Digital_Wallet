@@ -5,10 +5,12 @@ import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.entity.Transaction;
 import com.FACTor.Digital_Wallet.entity.Wallet;
 import com.FACTor.Digital_Wallet.exceptions.AccountNotFoundException;
+import com.FACTor.Digital_Wallet.exceptions.InvalidCredentialsException;
 import com.FACTor.Digital_Wallet.repository.TransactionRepo;
 import com.FACTor.Digital_Wallet.repository.WalletRepo;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.*;
 public class TransactionLogic {
     private final WalletRepo walletRepo;
     private final TransactionRepo transactionRepo;
+    private final PasswordEncoder encoder;
 public String generateRef(){
     return "TRX-" + System.currentTimeMillis(); //generates transaction reference code
     }
@@ -62,7 +65,7 @@ public Transaction deposit(long accountNumber, BigDecimal amount){
         return expectedDeposit;
     }
 
-    public List<Transaction> transfer(long senderAccount, long receiverAccount, BigDecimal amount){
+    public List<Transaction> transfer(long senderAccount, long receiverAccount, BigDecimal amount, String passcode){
 
     //searches for both sender and receiver account numbers in the db or throws 404 if not found
     Optional<Wallet> send = walletRepo.findByAccountNumber(senderAccount);
@@ -72,9 +75,11 @@ public Transaction deposit(long accountNumber, BigDecimal amount){
     }
     Wallet sender = send.get();
     Wallet receiver = receive.get();
-
+if (!encoder.matches(passcode, sender.getPasscode())){
+    throw new InvalidCredentialsException("Wrong passcode");
+    }
 //checks if sender has enough funds to send out
-    if (sender.getBalance().compareTo(amount) < 0){
+if (sender.getBalance().compareTo(amount) < 0){
         throw new IllegalArgumentException("Insufficient Balance");
     }
 
