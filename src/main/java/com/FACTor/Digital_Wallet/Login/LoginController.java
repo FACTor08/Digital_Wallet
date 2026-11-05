@@ -1,9 +1,7 @@
-package com.FACTor.Digital_Wallet.controller;
+package com.FACTor.Digital_Wallet.Login;
 
 import com.FACTor.Digital_Wallet.config.JwtUtil;
-import com.FACTor.Digital_Wallet.dto.LoginRequest;
-import com.FACTor.Digital_Wallet.entity.Customer;
-import com.FACTor.Digital_Wallet.service.LoginLogic;
+import com.FACTor.Digital_Wallet.customer.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
