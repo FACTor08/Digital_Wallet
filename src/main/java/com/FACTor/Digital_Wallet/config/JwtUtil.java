@@ -1,6 +1,7 @@
 package com.FACTor.Digital_Wallet.config;
 
-import com.FACTor.Digital_Wallet.entity.Customer;
+import com.FACTor.Digital_Wallet.customer.Customer;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -43,7 +44,7 @@ private SecretKey secretKey() {
              .build()
              .parseSignedClaims(token);
      return true;
-     }catch (Exception e){
+     }catch (JwtException e){
          return false;
      }
  }
