@@ -1,7 +1,5 @@
-package com.FACTor.Digital_Wallet.mapper;
+package com.FACTor.Digital_Wallet.wallet;
 
-import com.FACTor.Digital_Wallet.dto.WalletDTO;
-import com.FACTor.Digital_Wallet.entity.Wallet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -32,5 +30,15 @@ public class WalletMapper {
         wallet.setPasscode(encoder.encode(walletDTO.getPasscode()));
     return wallet;
         }
-
+    public WalletResponseDTO responseDTO(Wallet wallet){
+        return WalletResponseDTO.builder()
+                .id(wallet.getId())
+                .accountNumber(accountNumber())
+                .firstname(wallet.getCustomer().getFirstname())
+                .otherName(wallet.getCustomer().getOtherName())
+                .lastname(wallet.getCustomer().getLastname())
+                .balance(wallet.getBalance())
+                .accountTier(wallet.getCustomer().getAccountTier())
+                .build();
+    }
 }
