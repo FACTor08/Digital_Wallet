@@ -1,4 +1,4 @@
-package com.FACTor.Digital_Wallet.entity;
+package com.FACTor.Digital_Wallet.customer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

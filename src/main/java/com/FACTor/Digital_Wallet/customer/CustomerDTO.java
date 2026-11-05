@@ -1,4 +1,4 @@
-package com.FACTor.Digital_Wallet.dto;
+package com.FACTor.Digital_Wallet.customer;
 
 
 import lombok.AllArgsConstructor;
