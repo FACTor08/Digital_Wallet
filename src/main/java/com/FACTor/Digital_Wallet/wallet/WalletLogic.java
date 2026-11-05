@@ -1,14 +1,10 @@
-package com.FACTor.Digital_Wallet.service;
+package com.FACTor.Digital_Wallet.wallet;
 
-import com.FACTor.Digital_Wallet.dto.WalletDTO;
-import com.FACTor.Digital_Wallet.entity.Customer;
-import com.FACTor.Digital_Wallet.entity.Wallet;
+import com.FACTor.Digital_Wallet.customer.Customer;
 import com.FACTor.Digital_Wallet.exceptions.AccountNotFoundException;
 import com.FACTor.Digital_Wallet.exceptions.ExistingUserException;
 import com.FACTor.Digital_Wallet.exceptions.InvalidCredentialsException;
-import com.FACTor.Digital_Wallet.repository.CustomerRepo;
-import com.FACTor.Digital_Wallet.repository.WalletRepo;
-import com.FACTor.Digital_Wallet.mapper.WalletMapper;
+import com.FACTor.Digital_Wallet.customer.CustomerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +18,9 @@ import java.util.Optional;
 public class WalletLogic {
 private final WalletRepo repo;
 private final CustomerRepo customerRepo;
-private final WalletMapper set;
+private final WalletMapper mapper;
 
-    public Wallet newWallet(String email, WalletDTO pass) {
+    public WalletResponseDTO newWallet(String email, WalletDTO pass) {
         //searches for user email in the db
         Optional<Customer> user = customerRepo.findByEmail(email);
         if (user.isEmpty()){
@@ -40,16 +36,15 @@ private final WalletMapper set;
             throw new ExistingUserException("User already has an existing wallet");
         }else {
             //creates new wallet if user meets all conditions
-            Wallet wallet = set.transfer(pass);
+            Wallet wallet = mapper.transfer(pass);
             wallet.setCustomer(customer);
-    return repo.save(wallet);  //saves new user data to the db
-           }
+             Wallet newWallet = repo.save(wallet);  //saves new user data to the db
+        return mapper.responseDTO(newWallet);
+        }
     }
-    public Optional<Wallet> accountDetails(long accountNumber) {
-    Optional<Wallet> data = repo.findByAccountNumber(accountNumber);
-                if(data.isPresent()) {
-                    return data;
-                }
-       throw new AccountNotFoundException("Invalid account number!");
+    public WalletResponseDTO accountDetails(long accountNumber) {
+            Wallet data = repo.findByAccountNumber(accountNumber).orElseThrow(()->
+                    new AccountNotFoundException("Invalid account number!"));
+            return mapper.responseDTO(data);
     }
 }

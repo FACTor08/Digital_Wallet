@@ -1,10 +1,6 @@
-package com.FACTor.Digital_Wallet.service;
+package com.FACTor.Digital_Wallet.customer;
 
-import com.FACTor.Digital_Wallet.dto.CustomerDTO;
-import com.FACTor.Digital_Wallet.entity.Customer;
 import com.FACTor.Digital_Wallet.exceptions.ExistingUserException;
-import com.FACTor.Digital_Wallet.mapper.CustomerMapper;
-import com.FACTor.Digital_Wallet.repository.CustomerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,7 +18,7 @@ public class CustomerLogic {
     private final CustomerRepo repo;
     private final CustomerMapper mapper;
 
-    public Customer addUser(CustomerDTO data){
+    public CustomerResponseDTO addUser(CustomerDTO data){
         Optional<Customer> checkEmail = repo.findByEmail(data.getEmail());
         Optional<Customer> checkBvn = repo.findByBvn(data.getBvn());
         Optional<Customer> checkNin = repo.findByNin(data.getNin());
@@ -41,22 +37,20 @@ public class CustomerLogic {
         }
 
         Customer customer = mapper.userTransfer(data);
-     return repo.save(customer); //save user data to the db
-
+     Customer saved = repo.save(customer); //save user data to the db
+    return mapper.responseDTO(saved);
         }
 
     //A method for user to upload profile picture
-    public Customer addUserImage(String user, MultipartFile file) throws IOException {
-        Optional<Customer> username = repo.findByUsername(user);
-        Optional<Customer> firstname  = repo.findByFirstname(user);
-        if (username.isEmpty() && firstname.isEmpty()) {
-            throw new UsernameNotFoundException("User Not Found");
-        }
-        Customer update = username.get();
+    public CustomerResponseDTO addUserImage(String user, MultipartFile file) throws IOException {
+
+        Customer update = repo.findByUsername(user)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         byte[] image = file.getBytes();
         String imageType = file.getContentType();
         update.setImage(image);
         update.setImageType(imageType);
-       return repo.save(update);
+       Customer updated = repo.save(update);
+       return mapper.responseDTO(updated);
     }
 }
