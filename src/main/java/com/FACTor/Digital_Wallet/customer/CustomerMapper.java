@@ -1,8 +1,5 @@
-package com.FACTor.Digital_Wallet.mapper;
+package com.FACTor.Digital_Wallet.customer;
 
-import com.FACTor.Digital_Wallet.dto.CustomerDTO;
-
-import com.FACTor.Digital_Wallet.entity.Customer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,5 +35,16 @@ public class CustomerMapper {
                 customer.setAccountTier("Tier 1");
             }
         return customer;
+    }
+    public CustomerResponseDTO responseDTO(Customer customer){
+        return CustomerResponseDTO.builder()
+                .id(customer.getId())
+                .firstname(customer.getFirstname())
+                .otherName(customer.getOtherName())
+                .lastname(customer.getLastname())
+                .username(customer.getUsername())
+                .accountTier(customer.getAccountTier())
+                .image(customer.getImage())
+                .build();
     }
 }
