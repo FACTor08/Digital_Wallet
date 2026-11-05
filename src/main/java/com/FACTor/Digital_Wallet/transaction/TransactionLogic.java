@@ -1,15 +1,15 @@
-package com.FACTor.Digital_Wallet.service;
+package com.FACTor.Digital_Wallet.transaction;
 
 
-import com.FACTor.Digital_Wallet.entity.Customer;
-import com.FACTor.Digital_Wallet.entity.Transaction;
-import com.FACTor.Digital_Wallet.entity.Wallet;
+import com.FACTor.Digital_Wallet.customer.Customer;
+import com.FACTor.Digital_Wallet.customer.CustomerRepo;
+import com.FACTor.Digital_Wallet.wallet.Wallet;
 import com.FACTor.Digital_Wallet.exceptions.AccountNotFoundException;
 import com.FACTor.Digital_Wallet.exceptions.InvalidCredentialsException;
-import com.FACTor.Digital_Wallet.repository.TransactionRepo;
-import com.FACTor.Digital_Wallet.repository.WalletRepo;
+import com.FACTor.Digital_Wallet.wallet.WalletRepo;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +24,14 @@ import java.util.*;
 public class TransactionLogic {
     private final WalletRepo walletRepo;
     private final TransactionRepo transactionRepo;
+    private final CustomerRepo customerRepo;
     private final PasswordEncoder encoder;
+
 public String generateRef(){
     return "TRX-" + System.currentTimeMillis(); //generates transaction reference code
     }
     //searches for user account number in the db and throws "404 not found" if not found
-public Transaction deposit(long accountNumber, BigDecimal amount){
+public TransactionResponseDTO deposit(long accountNumber, BigDecimal amount){
    Optional<Wallet> wallet = walletRepo.findByAccountNumber(accountNumber);
    if(wallet.isEmpty()){
        throw new AccountNotFoundException("Invalid Account Number!");
@@ -47,8 +49,8 @@ public Transaction deposit(long accountNumber, BigDecimal amount){
     receipt.setReference(generateRef());
     receipt.setWallet(balance);
     receipt.setTimestamp(LocalDateTime.now());
-    return transactionRepo.save(receipt);
-
+    Transaction saved = transactionRepo.save(receipt);
+return transactionResponse(saved);
 }
 
     @NotNull
@@ -65,16 +67,18 @@ public Transaction deposit(long accountNumber, BigDecimal amount){
         return expectedDeposit;
     }
 
-    public List<Transaction> transfer(long senderAccount, long receiverAccount, BigDecimal amount, String passcode){
+    public TransactionResponseDTO transfer(String user, long receiverAccount, BigDecimal amount, String passcode)
+    {
 
     //searches for both sender and receiver account numbers in the db or throws 404 if not found
-    Optional<Wallet> send = walletRepo.findByAccountNumber(senderAccount);
-    Optional<Wallet> receive = walletRepo.findByAccountNumber(receiverAccount);
-    if(send.isEmpty() || receive.isEmpty()){
-        throw new AccountNotFoundException("Invalid Account Number");
-    }
-    Wallet sender = send.get();
-    Wallet receiver = receive.get();
+    Customer customer = customerRepo.findByUsername(user)
+            .orElseThrow(() -> new BadCredentialsException("User not found"));
+
+    Wallet sender = walletRepo.findByCustomer(customer)
+            .orElseThrow(() -> new AccountNotFoundException("user wallet not found"));
+    Wallet receiver =  walletRepo.findByAccountNumber(receiverAccount)
+            .orElseThrow(() -> new AccountNotFoundException("Invalid Account Number"));
+
 if (!encoder.matches(passcode, sender.getPasscode())){
     throw new InvalidCredentialsException("Wrong passcode");
     }
@@ -102,7 +106,18 @@ if (sender.getBalance().compareTo(amount) < 0){
     receiverReceipt.setWallet(receiver);
     receiverReceipt.setTimestamp(LocalDateTime.now());
 
-   return transactionRepo.saveAll(List.of(senderReceipt, receiverReceipt));//saves receipts to the db
+    transactionRepo.saveAll(List.of(senderReceipt, receiverReceipt));//saves receipts to the db
+   return transactionResponse(senderReceipt);
 }
 
+public TransactionResponseDTO transactionResponse(Transaction transaction){
+    return TransactionResponseDTO.builder()
+            .id(transaction.getId())
+            .amount(transaction.getAmount())
+            .type(transaction.getType())
+            .reference(transaction.getReference())
+            .timestamp(transaction.getTimestamp())
+            .wallet(transaction.getWallet().getBalance())
+            .build();
+}
    }
