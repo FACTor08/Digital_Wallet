@@ -1,7 +1,6 @@
-package com.FACTor.Digital_Wallet.repository;
+package com.FACTor.Digital_Wallet.wallet;
 
-import com.FACTor.Digital_Wallet.entity.Customer;
-import com.FACTor.Digital_Wallet.entity.Wallet;
+import com.FACTor.Digital_Wallet.customer.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
