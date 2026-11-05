@@ -1,5 +1,6 @@
-package com.FACTor.Digital_Wallet.entity;
+package com.FACTor.Digital_Wallet.transaction;
 
+import com.FACTor.Digital_Wallet.wallet.Wallet;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
