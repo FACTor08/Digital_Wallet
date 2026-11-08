@@ -1,6 +1,7 @@
 package com.FACTor.Digital_Wallet.exceptions;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,12 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<Map<String, Object>> accountNotFoundException(AccountNotFoundException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Status", "NOT_FOUND",
+                "Message", ex.getMessage()));
+    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> entityNotFoundException(EntityNotFoundException ex) {
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Status", "NOT_FOUND",
                 "Message", ex.getMessage()));
