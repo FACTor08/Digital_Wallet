@@ -10,6 +10,6 @@ public record CustomerResponseDTO(
          String lastname,
          String otherName,
          String username,
-          byte[] image
+         String image
          ) {
 }

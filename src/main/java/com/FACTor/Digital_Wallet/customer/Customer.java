@@ -28,9 +28,8 @@ public class Customer {
 private String phone;
 @NotNull
     private String email;
-    @Lob
-    private byte[] image;
-    private String imageType;
+    private String image;
+    private String imageId;
     private long nin;
     private long bvn;
 

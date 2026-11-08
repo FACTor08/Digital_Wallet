@@ -2,10 +2,12 @@ package com.FACTor.Digital_Wallet.customer;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class CustomerMapper {
 
-    public Customer userTransfer(CustomerDTO data){
+    public Customer userTransfer(Map<String, Object> photo, CustomerDTO data){
 
               Customer customer = new Customer();
 
@@ -22,6 +24,8 @@ public class CustomerMapper {
             }
             customer.setFirstname(data.getFirstname());
             customer.setLastname(data.getLastname());
+            customer.setImage((String) photo.get("secure_url"));
+            customer.setImageId((String) photo.get("public_id"));
 
             boolean ninExists, bvnExists;
             bvnExists = data.getBvn() != 0;
