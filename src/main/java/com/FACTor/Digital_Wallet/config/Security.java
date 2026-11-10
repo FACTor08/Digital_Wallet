@@ -31,6 +31,7 @@ public class Security {
                                         "/profile-picture-upload",
                                         "/new-wallet",
                                         "/login",
+                                        "/actuator/health",
                                         "/v3/api-docs",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",
